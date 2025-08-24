@@ -11,7 +11,9 @@ import co.com.autentication.model.error.ErrorCode;
 import co.com.autentication.model.exception.BusinessException;
 import co.com.autentication.model.user.User;
 import co.com.autentication.model.user.UserCreate;
-import co.com.autentication.model.user.gateways.UserRepository;
+import co.com.autentication.model.gateways.TransactionGateway;
+import co.com.autentication.model.gateways.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,8 +29,17 @@ class UserCreateUseCaseTest {
   @Mock
   private UserRepository repository;
 
+  @Mock
+  private TransactionGateway transactionGateway;
+
   @InjectMocks
   private UserCreateUseCase useCase;
+
+  @BeforeEach
+  void setUp() {
+    when(transactionGateway.execute(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(
+        0));
+  }
 
   @Test
   void shouldCreateUserSuccessfully() {
@@ -42,18 +53,10 @@ class UserCreateUseCaseTest {
 
     // Assert
     StepVerifier.create(result)
-        .expectNextMatches(created ->
-            created.getName()
-                .equals(user.getName()) &&
-                created.getLastName()
-                    .equals(user.getLastName()) &&
-                created.getEmail()
-                    .equals(user.getEmail()) &&
-                created.getDocumentId()
-                    .equals(user.getDocumentId())
-        )
+        .expectNextMatches(created -> created.getName().equals(user.getName())
+            && created.getLastName().equals(user.getLastName()) && created.getEmail()
+            .equals(user.getEmail()) && created.getDocumentId().equals(user.getDocumentId()))
         .verifyComplete();
-
     verify(repository, times(1)).save(any(User.class));
   }
 
@@ -63,13 +66,10 @@ class UserCreateUseCaseTest {
     UserCreate underAgeUser = UserTestUtil.getUnderAgeUserCreate();
 
     // Act & Assert
-    StepVerifier.create(useCase.createUser(underAgeUser))
-        .expectErrorSatisfies(throwable -> {
-            assertThat(throwable)
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining(ErrorCode.USER_CANNOT_BE_UNDER_AGE.getMessage());
-        })
-        .verify();
+    StepVerifier.create(useCase.createUser(underAgeUser)).expectErrorSatisfies(throwable -> {
+      assertThat(throwable).isInstanceOf(BusinessException.class)
+          .hasMessageContaining(ErrorCode.USER_CANNOT_BE_UNDER_AGE.getMessage());
+    }).verify();
 
     verify(repository, never()).save(any(User.class));
   }

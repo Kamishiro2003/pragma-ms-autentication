@@ -2,9 +2,10 @@ package co.com.autentication.usecase.user;
 
 import co.com.autentication.model.error.ErrorCode;
 import co.com.autentication.model.exception.BusinessException;
+import co.com.autentication.model.gateways.TransactionGateway;
+import co.com.autentication.model.gateways.UserRepository;
 import co.com.autentication.model.user.User;
 import co.com.autentication.model.user.UserCreate;
-import co.com.autentication.model.user.gateways.UserRepository;
 import java.time.LocalDate;
 import java.time.Period;
 import reactor.core.publisher.Mono;
@@ -15,14 +16,17 @@ import reactor.core.publisher.Mono;
 public class UserCreateUseCase {
 
   private final UserRepository repository;
+  private final TransactionGateway transactionGateway;
 
   /**
    * Constructs a UserCreateUseCase with the given UserRepository.
    *
-   * @param repository the user repository
+   * @param repository         the user repository
+   * @param transactionGateway the transaction gateway
    */
-  public UserCreateUseCase(UserRepository repository) {
+  public UserCreateUseCase(UserRepository repository, TransactionGateway transactionGateway) {
     this.repository = repository;
+    this.transactionGateway = transactionGateway;
   }
 
   /**
@@ -32,7 +36,7 @@ public class UserCreateUseCase {
    * @return a Mono containing the created User
    */
   public Mono<User> createUser(UserCreate user) {
-    return Mono.fromCallable(() -> {
+    return transactionGateway.execute(Mono.fromCallable(() -> {
       validateUserAge(user.birthDate());
       return User.builder()
           .name(user.name())
@@ -44,7 +48,7 @@ public class UserCreateUseCase {
           .address(user.address())
           .birthDate(user.birthDate())
           .build();
-    }).flatMap(repository::save);
+    }).flatMap(repository::save));
   }
 
   /**

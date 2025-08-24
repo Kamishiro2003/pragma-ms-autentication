@@ -1,5 +1,7 @@
 package co.com.autentication.api.config;
 
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,23 +9,30 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
-
+/**
+ * Configuration class for setting up CORS (Cross-Origin Resource Sharing) in a Spring WebFlux
+ * application.
+ */
 @Configuration
 public class CorsConfig {
 
-    @Bean
-    CorsWebFilter corsWebFilter(@Value("${cors.allowed-origins}") String origins) {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(origins.split(",")));
-        config.setAllowedMethods(Arrays.asList("POST", "GET"));
-        config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+  /**
+   * Creates a CorsWebFilter bean to handle CORS requests.
+   *
+   * @param origins Comma-separated list of allowed origins, injected from application properties.
+   * @return Configured CorsWebFilter instance.
+   */
+  @Bean
+  CorsWebFilter corsWebFilter(@Value("${cors.allowed-origins}") String origins) {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.setAllowedOrigins(List.of(origins.split(",")));
+    config.setAllowedMethods(Arrays.asList("POST", "GET"));
+    config.setAllowedHeaders(List.of(CorsConfiguration.ALL));
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
 
-        return new CorsWebFilter(source);
-    }
+    return new CorsWebFilter(source);
+  }
 }

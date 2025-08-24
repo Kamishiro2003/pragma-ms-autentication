@@ -7,7 +7,17 @@ import lombok.Getter;
  */
 @Getter
 public enum ErrorCode {
-  USER_CANNOT_BE_UNDER_AGE("USER-CANNOT-BE-UNDER-AGE", ExceptionCode.INVALID_INPUT,
+  EMAIL_ALREADY_EXISTS("EMAIL-ALREADY-EXISTS",
+      ExceptionCode.CONSTRAINT_VIOLATION,
+      "El correo electrónico ya está registrado."),
+  DOCUMENT_ALREADY_EXISTS("DOCUMENT-ALREADY-EXISTS",
+      ExceptionCode.CONSTRAINT_VIOLATION,
+      "El número de documento ya está registrado."),
+  CONSTRAINT_VIOLATION("CONSTRAINT-VIOLATION",
+      ExceptionCode.CONSTRAINT_VIOLATION,
+      "Violación de restricción de datos."),
+  USER_CANNOT_BE_UNDER_AGE("USER-CANNOT-BE-UNDER-AGE",
+      ExceptionCode.INVALID_INPUT,
       "El usuario no puede ser menor de edad."),
   ;
 

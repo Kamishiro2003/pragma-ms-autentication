@@ -40,4 +40,4 @@ cors:
 
 user:
   paths:
-    user: "/api/v1/user"
+    user: "/api/v1/usuarios"
