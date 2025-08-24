@@ -6,6 +6,7 @@ import co.com.autentication.model.user.UserCreate;
 import co.com.autentication.usecase.user.UserCreateUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -45,7 +46,7 @@ public class UserHandler {
               .doOnSuccess(u -> log.info("User created successfully: {}", u.getEmail()))
               .doOnError(e -> log.error("Error creating user: {}", e.getMessage(), e))
               .map(mapper::toUserRestResponse)
-              .flatMap(response -> ServerResponse.ok()
+              .flatMap(response -> ServerResponse.status(HttpStatus.CREATED)
                   .contentType(MediaType.APPLICATION_JSON)
                   .bodyValue(response));
         });
