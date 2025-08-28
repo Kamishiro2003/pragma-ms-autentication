@@ -52,4 +52,16 @@ public class UserReactiveRepositoryAdapter extends
       return e;
     });
   }
+
+  @Override
+  public Mono<User> findByDocumentId(String documentId) {
+    log.debug("Finding an user with document id: {}", documentId);
+    return repository.findByDocumentId(documentId)
+        .map(this::toEntity)
+        .doOnNext(user -> log.info("User with documentId {} was found", documentId))
+        .switchIfEmpty(Mono.defer(() -> {
+          log.debug("User with documentId {} was not found", documentId);
+          return Mono.empty();
+        }));
+  }
 }

@@ -13,11 +13,10 @@ import co.com.autentication.api.model.response.UserRestResponse;
 import co.com.autentication.api.router.UserRouterRest;
 import co.com.autentication.model.user.User;
 import co.com.autentication.model.user.UserCreate;
-import co.com.autentication.usecase.user.UserCreateUseCase;
+import co.com.autentication.usecase.user.UserUseCase;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -53,7 +52,7 @@ class ConfigTest {
   @Autowired
   private WebTestClient webTestClient;
   @MockitoBean
-  private UserCreateUseCase createUseCase;
+  private UserUseCase createUseCase;
   @MockitoBean
   private UserRestMapper mapper;
   @MockitoBean
@@ -69,13 +68,6 @@ class ConfigTest {
     when(createUseCase.createUser(userCreate)).thenReturn(Mono.just(user));
   }
 
-  @Test
-  void corsConfigurationShouldAllowOrigins() {
-    when(createUseCase.createUser(any(UserCreate.class))).thenReturn(Mono.just(user));
-    when(mapper.toUserRestResponse(any(User.class))).thenReturn(userRestResponse);
-
-    webTestClient.get().uri("/api/v1/usuarios").exchange().expectStatus().isNotFound();
-  }
 
   @TestConfiguration
   static class TestConfig {

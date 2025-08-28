@@ -2,6 +2,7 @@ package co.com.autentication.usecase.user;
 
 import co.com.autentication.model.error.ErrorCode;
 import co.com.autentication.model.exception.BusinessException;
+import co.com.autentication.model.exception.ObjectNotFoundException;
 import co.com.autentication.model.gateways.TransactionGateway;
 import co.com.autentication.model.gateways.UserRepository;
 import co.com.autentication.model.user.User;
@@ -13,7 +14,7 @@ import reactor.core.publisher.Mono;
 /**
  * Use case for creating a new user.
  */
-public class UserCreateUseCase {
+public class UserUseCase {
 
   private final UserRepository repository;
   private final TransactionGateway transactionGateway;
@@ -24,7 +25,7 @@ public class UserCreateUseCase {
    * @param repository         the user repository
    * @param transactionGateway the transaction gateway
    */
-  public UserCreateUseCase(UserRepository repository, TransactionGateway transactionGateway) {
+  public UserUseCase(UserRepository repository, TransactionGateway transactionGateway) {
     this.repository = repository;
     this.transactionGateway = transactionGateway;
   }
@@ -49,6 +50,12 @@ public class UserCreateUseCase {
           .birthDate(user.birthDate())
           .build();
     }).flatMap(repository::save));
+  }
+
+  public Mono<User> getUserByDocumentId(String documentId) {
+    return repository.findByDocumentId(documentId)
+        .switchIfEmpty(Mono.error(new ObjectNotFoundException(ErrorCode.USER_NOT_FOUND,
+            documentId)));
   }
 
   /**

@@ -14,7 +14,7 @@ import co.com.autentication.api.model.request.UserCreateRequest;
 import co.com.autentication.api.model.response.UserRestResponse;
 import co.com.autentication.model.user.User;
 import co.com.autentication.model.user.UserCreate;
-import co.com.autentication.usecase.user.UserCreateUseCase;
+import co.com.autentication.usecase.user.UserUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,7 +30,7 @@ import reactor.test.StepVerifier;
 class UserHandlerTest {
 
   @Mock
-  private UserCreateUseCase createUseCase;
+  private UserUseCase createUseCase;
   @Mock
   private UserRestMapper mapper;
   @Mock

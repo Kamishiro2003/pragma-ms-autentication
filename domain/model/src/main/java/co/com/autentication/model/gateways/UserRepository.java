@@ -15,4 +15,6 @@ public interface UserRepository {
    * @return a Mono containing the saved User
    */
   Mono<User> save(User user);
+
+  Mono<User> findByDocumentId(String documentId);
 }

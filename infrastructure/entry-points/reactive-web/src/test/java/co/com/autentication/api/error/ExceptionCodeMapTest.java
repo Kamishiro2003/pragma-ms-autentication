@@ -18,7 +18,7 @@ class ExceptionCodeMapTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"INVALID_INPUT, BAD_REQUEST", "CONSTRAINT_VIOLATION, CONFLICT",
+  @CsvSource({"INVALID_INPUT, BAD_REQUEST", "NOT_FOUND, NOT_FOUND", "CONSTRAINT_VIOLATION, CONFLICT",
       "UNEXPECTED_ERROR, INTERNAL_SERVER_ERROR"}
   )
   void ShouldReturnHttpStatus(String exceptionCodeString, String expectedHttpStatusString) {
