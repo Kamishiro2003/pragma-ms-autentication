@@ -19,6 +19,9 @@ public enum ErrorCode {
   USER_CANNOT_BE_UNDER_AGE("USER-CANNOT-BE-UNDER-AGE",
       ExceptionCode.INVALID_INPUT,
       "El usuario no puede ser menor de edad."),
+  USER_NOT_FOUND("USER-NOT-FOUND",
+      ExceptionCode.NOT_FOUND,
+      "No se encontró el usuario con documento de identidad: "),
   ;
 
   private final String code;

@@ -24,7 +24,7 @@ import reactor.test.StepVerifier;
 import util.UserTestUtil;
 
 @ExtendWith(MockitoExtension.class)
-class UserCreateUseCaseTest {
+class UserUseCaseTest {
 
   @Mock
   private UserRepository repository;
@@ -33,7 +33,7 @@ class UserCreateUseCaseTest {
   private TransactionGateway transactionGateway;
 
   @InjectMocks
-  private UserCreateUseCase useCase;
+  private UserUseCase useCase;
 
   @BeforeEach
   void setUp() {
