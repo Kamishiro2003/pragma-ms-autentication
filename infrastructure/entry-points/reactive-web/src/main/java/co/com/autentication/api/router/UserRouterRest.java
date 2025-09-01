@@ -6,7 +6,6 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
-import co.com.autentication.api.config.UserPath;
 import co.com.autentication.api.error.ErrorResponse;
 import co.com.autentication.api.error.GlobalErrorWebFilter;
 import co.com.autentication.api.handler.UserHandler;
@@ -34,7 +33,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @RequiredArgsConstructor
 public class UserRouterRest {
 
-  private final UserPath userPath;
+  private static final String PATH = "/api/v1/usuarios";
+
   private final UserHandler userHandler;
   private final GlobalErrorWebFilter globalErrorWebFilter;
 
@@ -44,38 +44,38 @@ public class UserRouterRest {
    * @return the router function
    */
   @Bean
-  @RouterOperations({
-
-      @RouterOperation(method = POST,
-          beanClass = UserHandler.class,
-          beanMethod = "listenUserCreate",
-          operation = @Operation(operationId = "createUser",
-              summary = "Crea un nuevo usuario",
-              description = "Recibe datos de usuario y devuelve el usuario creado",
-              requestBody = @RequestBody(required = true,
-                  content = @Content(mediaType = "application/json",
-                      schema = @Schema(implementation = UserCreateRequest.class)
-                  )
-              ),
-              responses = {@ApiResponse(responseCode = "201",
-                  description = "Usuario creado correctamente",
-                  content = @Content(mediaType = "application/json",
-                      schema = @Schema(implementation = UserRestResponse.class)
-                  )
-              ), @ApiResponse(responseCode = "400",
-                  description = "Parámetros inválidos o faltantes",
-                  content = @Content(mediaType = "application/json",
-                      schema = @Schema(implementation = ErrorResponse.class)
-                  )
-              ), @ApiResponse(responseCode = "409",
-                  description = "Usuario con email o documento ya existe",
-                  content = @Content(mediaType = "application/json",
-                      schema = @Schema(implementation = ErrorResponse.class)
-                  )
-              )}
-          )
-      ), @RouterOperation(method = GET,
+  @RouterOperations({@RouterOperation(method = POST,
+      path = PATH,
       beanClass = UserHandler.class,
+      beanMethod = "listenUserCreate",
+      operation = @Operation(operationId = "createUser",
+          summary = "Crea un nuevo usuario",
+          description = "Recibe datos de usuario y devuelve el usuario creado",
+          requestBody = @RequestBody(required = true,
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = UserCreateRequest.class)
+              )
+          ),
+          responses = {@ApiResponse(responseCode = "201",
+              description = "Usuario creado correctamente",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = UserRestResponse.class)
+              )
+          ), @ApiResponse(responseCode = "400",
+              description = "Parámetros inválidos o faltantes",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              )
+          ), @ApiResponse(responseCode = "409",
+              description = "Usuario con email o documento ya existe",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              )
+          )}
+      )
+  ), @RouterOperation(method = GET,
+      beanClass = UserHandler.class,
+      path = PATH,
       beanMethod = "listenFindUserByDocumentId",
       operation = @Operation(operationId = "findUserByDocumentId",
           summary = "Busca un usuario por documentId",
@@ -101,8 +101,9 @@ public class UserRouterRest {
   )}
   )
   public RouterFunction<ServerResponse> routerFunction() {
-    return route(POST(userPath.getUser()),
-        userHandler::listenUserCreate).andRoute(GET(userPath.getUser()),
-        userHandler::listenFindUserByDocumentId).filter(globalErrorWebFilter);
+    return route(POST(PATH), userHandler::listenUserCreate).andRoute(GET(PATH),
+            userHandler::listenFindUserByDocumentId
+        )
+        .filter(globalErrorWebFilter);
   }
 }

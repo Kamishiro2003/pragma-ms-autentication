@@ -11,6 +11,8 @@ public class UserTestUtil {
   private static final String NAME = "John";
   private static final String LAST_NAME = "Doe";
   private static final String EMAIL = "jonh.doe@example.com";
+  private static final String PASSWORD = "test password";
+  private static final String ROLE = "test role";
   private static final String DOCUMENT_ID = "1234567890";
   private static final String PHONE = "555-1234";
   private static final String ADDRESS = "123 Main St, Anytown, USA";
@@ -31,29 +33,28 @@ public class UserTestUtil {
   }
 
   public static UserCreate getUserCreate() {
-    return new UserCreate(
-        NAME,
+    return new UserCreate(NAME,
         LAST_NAME,
         EMAIL,
+        PASSWORD,
+        ROLE,
         DOCUMENT_ID,
         BASE_SALARY,
         PHONE,
         ADDRESS,
-        LocalDate.parse("2000-01-01")
-    );
+        LocalDate.parse("2000-01-01"));
   }
 
   public static UserCreate getUnderAgeUserCreate() {
-    return new UserCreate(
-        NAME,
+    return new UserCreate(NAME,
         LAST_NAME,
         EMAIL,
+        PASSWORD,
+        ROLE,
         DOCUMENT_ID,
         BASE_SALARY,
         PHONE,
         ADDRESS,
-        LocalDate.now()
-            .minusYears(17)
-    );
+        LocalDate.now().minusYears(17));
   }
 }

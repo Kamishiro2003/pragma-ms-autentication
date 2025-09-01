@@ -8,4 +8,5 @@ public enum ExceptionCode {
   NOT_FOUND,
   CONSTRAINT_VIOLATION,
   UNEXPECTED_ERROR,
+  UNAUTHORIZED,
 }

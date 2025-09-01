@@ -36,6 +36,12 @@ public class UserEntity {
   @Column("correo_electronico")
   private String email;
 
+  @Column("contrasena")
+  private String password;
+
+  @Column("id_role")
+  private String roleId;
+
   @Column("documento_identidad")
   private String documentId;
 
