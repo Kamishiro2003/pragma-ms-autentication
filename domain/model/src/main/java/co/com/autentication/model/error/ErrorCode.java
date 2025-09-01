@@ -22,7 +22,13 @@ public enum ErrorCode {
   USER_NOT_FOUND("USER-NOT-FOUND",
       ExceptionCode.NOT_FOUND,
       "No se encontró el usuario con documento de identidad: "),
-  ;
+  ROLE_NOT_FOUND("ROLE-NOT-FOUND", ExceptionCode.NOT_FOUND, "No se encontró el rol con id: "),
+  USER_NOT_FOUND_BY_EMAIL("USER-NOT-FOUND-BY-EMAIL",
+      ExceptionCode.NOT_FOUND,
+      "No se encontró el usuario con email: "),
+  INVALID_CREDENTIALS("INVALID-CREDENTIALS",
+      ExceptionCode.UNAUTHORIZED,
+      "La contraseña es incorrecta");
 
   private final String code;
   private final ExceptionCode exceptionCode;

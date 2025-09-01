@@ -39,6 +39,14 @@ public class UserCreateRequest {
   @Email(message = "El correo electrónico debe tener un formato válido")
   private String email;
 
+  @NotBlank(message = "La contraseña es obligatorio")
+  @Size(max = 100, message = "La contraseña debe tener menos de 100 caracteres")
+  private String password;
+
+  @NotNull(message = "El rol es obligatorio")
+  @Size(max = 50, message = "El identificador del rol debe tener menos de 50 caracteres")
+  private String roleId;
+
   @NotBlank(message = "El documento de identidad es obligatorio")
   @Size(max = 30, message = "El documento de identidad debe tener menos de 30 caracteres")
   private String documentId;
@@ -48,14 +56,8 @@ public class UserCreateRequest {
       fraction = 2,
       message = "El salario base debe tener como máximo 8 dígitos enteros y 2 decimales"
   )
-  @DecimalMin(value = "0.0",
-      inclusive = true,
-      message = "El salario base debe ser mayor o igual a 0"
-  )
-  @DecimalMax(value = "15000000.0",
-      inclusive = true,
-      message = "El salario base no puede superar 15,000,000"
-  )
+  @DecimalMin(value = "0.0", message = "El salario base debe ser mayor o igual a 0")
+  @DecimalMax(value = "15000000.0", message = "El salario base no puede superar 15,000,000")
   private BigDecimal baseSalary;
 
   @Size(max = 20, message = "El teléfono debe tener menos de 20 caracteres")

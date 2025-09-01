@@ -34,22 +34,20 @@ public class UserHandler {
   public Mono<ServerResponse> listenUserCreate(ServerRequest serverRequest) {
     log.info("Received request to create user at path={} method={}",
         serverRequest.path(),
-        serverRequest.method());
+        serverRequest.method()
+    );
     return serverRequest.bodyToMono(UserCreateRequest.class)
         .doOnNext(req -> log.debug("Payload received: {}", req))
-        .flatMap(request -> {
-          requestValidator.validate(request);
-
-          UserCreate userCreate = mapper.toUserCreate(request);
-
-          return useCase.createUser(userCreate)
-              .doOnSuccess(u -> log.info("User created successfully: {}", u.getEmail()))
-              .doOnError(e -> log.error("Error creating user: {}", e.getMessage(), e))
-              .map(mapper::toUserRestResponse)
-              .flatMap(response -> ServerResponse.status(HttpStatus.CREATED)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .bodyValue(response));
-        });
+        .flatMap(request -> requestValidator.validate(request)
+            .then(Mono.defer(() -> {
+              UserCreate userCreate = mapper.toUserCreate(request);
+              return useCase.createUser(userCreate)
+                  .map(mapper::toUserRestResponse)
+                  .flatMap(response -> ServerResponse.status(HttpStatus.CREATED)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .bodyValue(response));
+            }))
+        );
   }
 
   public Mono<ServerResponse> listenFindUserByDocumentId(ServerRequest serverRequest) {
@@ -58,7 +56,8 @@ public class UserHandler {
     log.info("Received request to find user with documentId={} at path={} method={}",
         documentId,
         serverRequest.path(),
-        serverRequest.method());
+        serverRequest.method()
+    );
 
     return useCase.getUserByDocumentId(documentId)
         .map(mapper::toUserRestResponse)
