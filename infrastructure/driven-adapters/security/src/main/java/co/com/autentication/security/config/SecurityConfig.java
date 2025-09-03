@@ -45,6 +45,11 @@ public class SecurityConfig {
     return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
         .authorizeExchange(exchange -> exchange.pathMatchers("/api/v1/login")
             .permitAll()
+            .pathMatchers("/swagger-ui/**",
+                "/swagger-ui.html",
+                "/v3/api-docs/**",
+                "/webjars/swagger-ui/**")
+            .permitAll()
             .pathMatchers(HttpMethod.POST, "/api/v1/usuarios")
             .hasAnyAuthority(RoleEnum.ADMIN.getName(), RoleEnum.ADVISER.getName())
             .anyExchange()
