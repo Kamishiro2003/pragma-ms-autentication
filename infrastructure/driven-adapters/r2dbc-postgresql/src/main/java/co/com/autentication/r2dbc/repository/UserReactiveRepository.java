@@ -16,6 +16,8 @@ public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntit
 
   Mono<UserEntity> findByDocumentId(String documentId);
 
+  Mono<UserEntity> findByEmail(String email);
+
   @Query("SELECT * FROM get_user_with_role(:email)")
   Mono<UserWithRolProjection> findUserWithRoleByEmail(String email);
 }

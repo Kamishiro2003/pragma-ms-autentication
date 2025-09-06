@@ -48,8 +48,8 @@ class UserUseCaseTest {
   @Test
   void shouldCreateUserSuccessfully() {
     // Arrange
-    when(transactionGateway.execute(ArgumentMatchers.<Mono<?>>any())).thenAnswer(invocation -> invocation.getArgument(
-        0));
+    when(transactionGateway.execute(ArgumentMatchers.<Mono<?>>any())).thenAnswer(
+        invocation -> invocation.getArgument(0));
     User user = UserTestUtil.getUser();
     UserCreate userCreate = UserTestUtil.getUserCreate();
     when(roleUseCase.validateRoleById(anyString())).thenReturn(Mono.empty());
@@ -60,11 +60,16 @@ class UserUseCaseTest {
     Mono<User> result = useCase.createUser(userCreate);
 
     // Assert
-    StepVerifier.create(result)
-        .expectNextMatches(created -> created.getName()
-            .equals(user.getName()) && created.getLastName()
-            .equals(user.getLastName()) && created.getEmail()
-            .equals(user.getEmail()) && created.getDocumentId()
+    StepVerifier
+        .create(result)
+        .expectNextMatches(created -> created
+            .getName()
+            .equals(user.getName()) && created
+            .getLastName()
+            .equals(user.getLastName()) && created
+            .getEmail()
+            .equals(user.getEmail()) && created
+            .getDocumentId()
             .equals(user.getDocumentId()))
         .verifyComplete();
 
@@ -76,13 +81,15 @@ class UserUseCaseTest {
   @Test
   void shouldThrowExceptionWhenUserIsUnderAge() {
     // Arrange
-    when(transactionGateway.execute(ArgumentMatchers.<Mono<?>>any())).thenAnswer(invocation -> invocation.getArgument(
-        0));
+    when(transactionGateway.execute(ArgumentMatchers.<Mono<?>>any())).thenAnswer(
+        invocation -> invocation.getArgument(0));
     UserCreate underAgeUser = UserTestUtil.getUnderAgeUserCreate();
 
     // Act & Assert
-    StepVerifier.create(useCase.createUser(underAgeUser))
-        .expectErrorSatisfies(throwable -> assertThat(throwable).isInstanceOf(BusinessException.class)
+    StepVerifier
+        .create(useCase.createUser(underAgeUser))
+        .expectErrorSatisfies(throwable -> assertThat(throwable)
+            .isInstanceOf(BusinessException.class)
             .hasMessageContaining(ErrorCode.USER_CANNOT_BE_UNDER_AGE.getMessage()))
         .verify();
 
@@ -99,7 +106,8 @@ class UserUseCaseTest {
     Mono<User> result = useCase.getUserByDocumentId(user.getDocumentId());
 
     // Assert
-    StepVerifier.create(result)
+    StepVerifier
+        .create(result)
         .expectNext(user)
         .verifyComplete();
 
@@ -116,9 +124,10 @@ class UserUseCaseTest {
     Mono<User> result = useCase.getUserByDocumentId(documentId);
 
     // Assert
-    StepVerifier.create(result)
-        .expectErrorSatisfies(throwable -> assertThat(throwable).isInstanceOf(
-                ObjectNotFoundException.class)
+    StepVerifier
+        .create(result)
+        .expectErrorSatisfies(throwable -> assertThat(throwable)
+            .isInstanceOf(ObjectNotFoundException.class)
             .hasMessageContaining(ErrorCode.USER_NOT_FOUND.getMessage()))
         .verify();
   }
@@ -126,19 +135,21 @@ class UserUseCaseTest {
   @Test
   void shouldReturnUserWithRoleByEmail() {
     // Arrange
-    UserWithRole userWithRole = UserWithRole.builder()
+    UserWithRole userWithRole = UserWithRole
+        .builder()
         .email("test@example.com")
         .password("encoded-pass")
         .roleName("ADMIN")
         .build();
-    when(repository.findUserWithRoleByEmail(userWithRole.getEmail())).thenReturn(Mono.just(
-        userWithRole));
+    when(repository.findUserWithRoleByEmail(userWithRole.getEmail())).thenReturn(
+        Mono.just(userWithRole));
 
     // Act
     Mono<UserWithRole> result = useCase.getUserWithRoleByEmail(userWithRole.getEmail());
 
     // Assert
-    StepVerifier.create(result)
+    StepVerifier
+        .create(result)
         .expectNext(userWithRole)
         .verifyComplete();
 
@@ -155,10 +166,47 @@ class UserUseCaseTest {
     Mono<UserWithRole> result = useCase.getUserWithRoleByEmail(email);
 
     // Assert
-    StepVerifier.create(result)
-        .expectErrorSatisfies(throwable -> assertThat(throwable).isInstanceOf(
-                ObjectNotFoundException.class)
+    StepVerifier
+        .create(result)
+        .expectErrorSatisfies(throwable -> assertThat(throwable)
+            .isInstanceOf(ObjectNotFoundException.class)
             .hasMessageContaining(ErrorCode.USER_NOT_FOUND_BY_EMAIL.getMessage()))
+        .verify();
+  }
+
+  @Test
+  void shouldReturnUserByEmail() {
+    // Arrange
+    User user = UserTestUtil.getUser();
+    when(repository.findByEmail(user.getEmail())).thenReturn(Mono.just(user));
+
+    // Act
+    Mono<User> result = useCase.getUserByEmail(user.getEmail());
+
+    // Assert
+    StepVerifier
+        .create(result)
+        .expectNext(user)
+        .verifyComplete();
+
+    verify(repository, times(1)).findByEmail(user.getEmail());
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUserByEmailNotFound() {
+    // Arrange
+    String email = "example@gmail.com";
+    when(repository.findByEmail(email)).thenReturn(Mono.empty());
+
+    // Act
+    Mono<User> result = useCase.getUserByEmail(email);
+
+    // Assert
+    StepVerifier
+        .create(result)
+        .expectErrorSatisfies(throwable -> assertThat(throwable)
+            .isInstanceOf(ObjectNotFoundException.class)
+            .hasMessageContaining(ErrorCode.USER_NOT_FOUND_BY_EMAIL.getMessage() + email))
         .verify();
   }
 }

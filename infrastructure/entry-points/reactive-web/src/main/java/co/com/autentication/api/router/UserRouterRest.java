@@ -34,6 +34,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class UserRouterRest {
 
   private static final String PATH = "/api/v1/usuarios";
+  private static final String EMAIL_PATH = PATH + "/email";
 
   private final UserHandler userHandler;
   private final GlobalErrorWebFilter globalErrorWebFilter;
@@ -98,12 +99,37 @@ public class UserRouterRest {
               )
           )}
       )
+  ), @RouterOperation(method = GET,
+      beanClass = UserHandler.class,
+      path = EMAIL_PATH,
+      beanMethod = "listenFindUserByEmail",
+      operation = @Operation(operationId = "findUserByEmail",
+          summary = "Busca un usuario por correo electrónico",
+          description = "Devuelve un usuario si existe con el correo electrónico proporcionado",
+          parameters = {@Parameter(name = "email",
+              in = ParameterIn.QUERY,
+              required = true,
+              description = "El correo electrónico del usuario",
+              schema = @Schema(type = "string")
+          )},
+          responses = {@ApiResponse(responseCode = "200",
+              description = "Usuario encontrado correctamente",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = UserRestResponse.class)
+              )
+          ), @ApiResponse(responseCode = "404",
+              description = "Usuario no encontrado",
+              content = @Content(mediaType = "application/json",
+                  schema = @Schema(implementation = ErrorResponse.class)
+              )
+          )}
+      )
   )}
   )
   public RouterFunction<ServerResponse> routerFunction() {
-    return route(POST(PATH), userHandler::listenUserCreate).andRoute(GET(PATH),
-            userHandler::listenFindUserByDocumentId
-        )
+    return route(POST(PATH), userHandler::listenUserCreate)
+        .andRoute(GET(PATH), userHandler::listenFindUserByDocumentId)
+        .andRoute(GET(EMAIL_PATH), userHandler::listenFindUserByEmail)
         .filter(globalErrorWebFilter);
   }
 }

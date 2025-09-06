@@ -76,6 +76,18 @@ public class UserUseCase {
   }
 
   /**
+   * Retrieves a user by their email.
+   *
+   * @param email the email of the user to find
+   * @return a Mono containing User or an error if not found
+   */
+  public Mono<User> getUserByEmail(String email) {
+    return repository.findByEmail(email)
+        .switchIfEmpty(Mono.error(new ObjectNotFoundException(ErrorCode.USER_NOT_FOUND_BY_EMAIL,
+            email)));
+  }
+
+  /**
    * Validates that the user is at least 18 years old.
    *
    * @param birthDate the user's birthdate

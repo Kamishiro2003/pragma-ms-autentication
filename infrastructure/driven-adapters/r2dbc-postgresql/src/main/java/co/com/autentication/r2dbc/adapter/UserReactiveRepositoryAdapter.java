@@ -42,21 +42,22 @@ public class UserReactiveRepositoryAdapter extends
   @Override
   public Mono<User> save(User user) {
     log.debug("Saving user: {}", user);
-    return super.save(user).onErrorMap(e -> {
-      if (e instanceof DataIntegrityViolationException) {
-        log.error("Data integrity violation: {}", e.getMessage());
-        String message = e.getMessage();
-        if (message.contains("correo_electronico_unique_constraint")) {
-          return new ConstraintException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
-        if (message.contains("documento_identidad_unique_constraint")) {
-          return new ConstraintException(ErrorCode.DOCUMENT_ALREADY_EXISTS);
-        }
-        return new ConstraintException(ErrorCode.CONSTRAINT_VIOLATION);
-      }
-      log.error("Unexpected error: {}", e.getMessage());
-      return e;
-    });
+    return super.save(user)
+        .onErrorMap(e -> {
+          if (e instanceof DataIntegrityViolationException) {
+            log.error("Data integrity violation: {}", e.getMessage());
+            String message = e.getMessage();
+            if (message.contains("correo_electronico_unique_constraint")) {
+              return new ConstraintException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            }
+            if (message.contains("documento_identidad_unique_constraint")) {
+              return new ConstraintException(ErrorCode.DOCUMENT_ALREADY_EXISTS);
+            }
+            return new ConstraintException(ErrorCode.CONSTRAINT_VIOLATION);
+          }
+          log.error("Unexpected error: {}", e.getMessage());
+          return e;
+        });
   }
 
   @Override
@@ -73,12 +74,24 @@ public class UserReactiveRepositoryAdapter extends
 
   @Override
   public Mono<UserWithRole> findUserWithRoleByEmail(String email) {
-    log.debug("Finding an user with email id: {}", email);
+    log.debug("Finding userWithRole by email: {}", email);
     return repository.findUserWithRoleByEmail(email)
         .map(userPersistenceMapper::toUserWithRole)
-        .doOnNext(userWithRole -> log.info("User with email {} was found", email))
+        .doOnNext(userWithRole -> log.info("UserWithRole with email {} was found", email))
         .switchIfEmpty(Mono.defer(() -> {
-          log.debug("User with email {} was not found", email);
+          log.debug("UserWithRole with email {} was not found", email);
+          return Mono.empty();
+        }));
+  }
+
+  @Override
+  public Mono<User> findByEmail(String email) {
+    log.debug("Finding user entity by email: {}", email);
+    return repository.findByEmail(email)
+        .map(this::toEntity)
+        .doOnNext(user -> log.info("User entity with email {} was found", email))
+        .switchIfEmpty(Mono.defer(() -> {
+          log.debug("User entity with email {} was not found", email);
           return Mono.empty();
         }));
   }
