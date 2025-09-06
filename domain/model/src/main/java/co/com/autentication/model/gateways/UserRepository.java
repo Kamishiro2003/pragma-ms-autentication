@@ -32,4 +32,12 @@ public interface UserRepository {
    * @return a Mono emitting a UserWithRole if found, empty otherwise
    */
   Mono<UserWithRole> findUserWithRoleByEmail(String email);
+
+  /**
+   * Finds a User by their email.
+   *
+   * @param email the email fo the user to find
+   * @return a Mono emitting the User if found, empty otherwise
+   */
+  Mono<User> findByEmail(String email);
 }
