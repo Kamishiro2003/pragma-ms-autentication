@@ -24,4 +24,10 @@ public class ApplicationException extends RuntimeException {
     this.exceptionCode = errorCode.getExceptionCode();
     this.fullErrorCode = errorCode.getCode();
   }
+
+  public ApplicationException(ErrorCode errorCode, String value) {
+    super(errorCode.getMessage() + value);
+    this.exceptionCode = errorCode.getExceptionCode();
+    this.fullErrorCode = errorCode.getCode();
+  }
 }
