@@ -20,6 +20,6 @@ public class UserWithRolProjection {
   @Column("contrasena")
   private String password;
 
-  @Column("rol")
+  @Column("nombre")
   private String roleName;
 }
