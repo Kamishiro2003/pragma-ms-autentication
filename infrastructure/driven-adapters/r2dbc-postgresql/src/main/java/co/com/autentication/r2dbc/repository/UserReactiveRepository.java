@@ -18,6 +18,12 @@ public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntit
 
   Mono<UserEntity> findByEmail(String email);
 
-  @Query("SELECT * FROM get_user_with_role(:email)")
+  @Query("""
+      SELECT u.correo_electronico, u.contrasena, r.nombre
+        FROM usuario u
+        JOIN rol r ON u.id_role = r.id_role
+        WHERE u.correo_electronico = :email;
+      """
+  )
   Mono<UserWithRolProjection> findUserWithRoleByEmail(String email);
 }
